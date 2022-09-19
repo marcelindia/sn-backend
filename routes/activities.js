@@ -1,13 +1,26 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const Activity = require("../models/activitiesModel");
 const router = express.Router();
 
-router.get("/", (req, res) => {
-  res.json({ msg: "Get ALL" });
+router.get("/", async (req, res) => {
+  const activity = await Activity.find({});
+
+  res.status(200).json(activity);
 });
 
-router.get("/:id", (req, res) => {
-  res.json({ msg: "Get One" });
+router.get("/:id", async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({ error: "No activity found!" });
+  }
+
+  const activity = await Activity.findById(id);
+  if (!activity) {
+    return res.status(404).json({ error: "Activity Not Found" });
+  }
+  res.status(200).json(activity);
 });
 
 router.post("/", async (req, res) => {
